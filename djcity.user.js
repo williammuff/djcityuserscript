@@ -28,7 +28,6 @@ var cpTrack;
 var debugLogging
 //debugLogging = true;
 
-
 //PROGRESS BAR FUNCTIONALITY
 NProgress.configure({ showSpinner: false });
 $(document).ajaxStart(function() { NProgress.start(); });
@@ -79,6 +78,7 @@ function hotboxTopPicksAddInfo()
             success:function(result){
                 $(result).each(function(kkk,vvv){
                     tr_obj = $('#' + k + '_' + vvv[0]['tid'])
+                    
                     if (vvv[2]['d_cnt'] > 0) tr_obj.addClass('dlBoxSide')
                     if (vvv[3]['p_cnt'] > 0) tr_obj.find('.pool_txt').addClass('played')
                 })
@@ -118,16 +118,12 @@ function addStyleCSS()
 {
     //Custom Style Classes (generic)
     $("<style>").prop("type", "text/css").html("div.jp-progress_active  { z-index: 4; }")
-    
     $("<style>").prop("type", "text/css").html(".record_pool_listing li .pool_icon li{float:left;width:25px;height:35px;text-align:center;border-bottom:0px dotted #000000;border-left:1px dotted #000000;}").appendTo("head");
     $("<style>").prop("type", "text/css").html(".played { opacity: 0.5; }").appendTo("head");
     $("<style>").prop("type", "text/css").html(".dlBoxSide { border-bottom: 2px solid red;").appendTo("head");
-    $("<style>").prop("type", "text/css").html(".record_pool_listing li .pool_icon li a.crt_icon{background:url(http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/img/pool_record_icon.png) -53px 10px no-repeat;width:28px;height:34px;display:inline-block;}").appendTo("head");
-    $("<style>").prop("type", "text/css").html(".record_pool_listing li .pool_icon li a.crt_icon_lit{background:url(http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/img/pool_record_icon.png) -53px -20px no-repeat;width:28px;height:34px;display:inline-block;}").appendTo("head");
     $("<style>").prop("type", "text/css").html(".righttop {        position: absolute;        top: 0px;        right: 25px;        }").appendTo("head");
     $("<style>").prop("type", "text/css").html('.clearHistoryBtn {\r\n    float: left;\r\n    display: block;\r\n    background: url(data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAyCAYAAAC6VTBiAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN\/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz\/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH\/w\/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA\/g88wAAKCRFRHgg\/P9eM4Ors7ONo62Dl8t6r8G\/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt\/qIl7gRoXgugdfeLZrIPQLUAoOnaV\/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl\/AV\/1s+X48\/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H\/LcL\/\/wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93\/+8\/\/UegJQCAZkmScQAAXkQkLlTKsz\/HCAAARKCBKrBBG\/TBGCzABhzBBdzBC\/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD\/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q\/pH5Z\/YkGWcNMw09DpFGgsV\/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY\/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4\/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L\/1U\/W36p\/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N\/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26\/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE\/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV\/MN8C3yLfLT8Nvnl+F30N\/I\/9k\/3r\/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt\/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi\/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a\/zYnKOZarnivN7cyzytuQN5zvn\/\/tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO\/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3\/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA\/0HIw6217nU1R3SPVRSj9Yr60cOxx++\/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3\/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX\/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8\/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb\/1tWeOT3dvfN6b\/fF9\/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR\/cGhYPP\/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF\/6i\/suuFxYvfvjV69fO0ZjRoZfyl5O\/bXyl\/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o\/2j5sfVT0Kf7kxmTk\/8EA5jz\/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5\/wAAgOkAAHUwAADqYAAAOpgAABdvkl\/FRgAAANFJREFUeNrslsEKglAQRc+omyBb1Ie2bvPEQeh\/TXAjTIsUUtNM04q8y3m8w+VefYyYHx6BM7DhdeXAScwPL8CW8crE\/NCYKI836IMQkYGQIu2emQ2EBLs6qEhvs7kyeV5x5abDxULtVDk081nOyWHfbqPHzfrvPIZkExmZB0TlMzdGORCJmbG2s0J+BhKo6uStwAOSkQDKe4k3ca0A2P5Lxc65QbNeiKrWLjnnUNUZP7a+w3s3XS6WaafKoZnPck5EpNVGnxuJ43jdCr51K7gOAIgqTtg\/xWFHAAAAAElFTkSuQmCC);\r\n    width: 17px;\r\n    height: 20px;\r\n    overflow: hidden;\r\n    margin: 7px 0 0 -50px;\r\n    display: none;\r\n}\r\n\r\n.clearHistoryBtn:hover {\r\n    background-position: 0 -30px;\r\n}').appendTo("head");
-    $("<style>").prop("type", "text/css").html('a.crt_icon {    background: url(http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/img/pool_record_icon.png) -53px 10px no-repeat;    width: 28px;    height: 34px;    display: inline-block;}').appendTo("head");
-    $("<style>").prop("type", "text/css").html('a.crt_icon_lit    {    background: url(http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/img/pool_record_icon.png) -53px -20px no-repeat;    width: 28px;    height: 34px;    display: inline-block;}').appendTo("head");
+    $("<style>").prop("type", "text/css").html(".crt_icon_lit { color:red; }").appendTo("head")
     $("<style>").prop("type", "text/css").html('.dlBox {float:right; width:100%; height:1px; background:red; margin-top:34px;}').appendTo("head");
     
     //CSS files added to page
@@ -136,9 +132,12 @@ function addStyleCSS()
     addCSS('https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css')
 
     //Modal HTML
-	shtml = '<div id="ex1"style="display:none;"><h1>Settings</h1>'
+	shtml = '<div id="ex1"style="display:none;"><h1>Settings</h1><br>'
     shtml += 'Download All Versions(when download is initiated)<select id="downloadAllFlag"style="width:100%"><option disabled selected value></option><option value="No">No</option><option value="Yes">Yes</option></select>'
-    shtml += 'Skip Into Track(if set player will seek that%into the track)<input type="text"id="skipIntoPCT"style="width:100%"/><input type="button" id="saveSettings" value="Save" style="float:right;"/></div>'
+    shtml += 'Skip Into Track(if set player will seek that%into the track)<input type="text"id="skipIntoPCT"style="width:100%"/>'
+    shtml += '<div style="width:100%;"><input style="margin-top:20px;float:right;" type="button" id="saveSettings" value="Save"/></div>'
+    shtml += '<br><br><a target="_blank" href="https://github.com/williammuff/djcityuserscript/blob/master/README.md">Click here for full usage guide</a>'
+    shtml += '</div>'
     $('body').append(shtml)
 
     //Previously used for file downloads
@@ -169,12 +168,22 @@ function pageVisuals()
     //Crate icon
     $('li').find('[id^=c_]').parent().remove();
     $('ul.pool_icon').each(function(){
-        var tid = $(this).parent().prev().children().attr('id').replace('t_','');
-        var dpid = $(this).parent().prev().children().attr('data-pid');
-        var pText = $(this).parent().prev().children().children().find('.player_txt');
-        $(this).append('<li><a id="c_' + tid + '" data-pid="' + dpid + '" class="crt_icon"></a></li>');
-        $(pText).after('<div id="dl_' + tid + '"></div>');
+        if (!($(this).parent().prev().children().hasClass('ignore'))) {
+            var tid = $(this).parent().prev().children().attr('id').replace('t_','');
+            var dpid = $(this).parent().prev().children().attr('data-pid');
+            var pText = $(this).parent().prev().children().children().find('.player_txt');
+            $(this).append('<li><i id="c_' + tid + '" data-pid="' + dpid + '" class="fa fa-plus-square fa-lg crt_icon" style="margin-top:45%"></i></li>')
+            $(pText).after('<div id="dl_' + tid + '"></div>');
+        }
     });
+
+    //Checks for "main record pool BPM tag and adds crate text if main page"
+    $('.float_right.w210.bmp_txt').find('div').addClass('float_left')
+    $('.float_right.w210.bmp_txt').find('div').append(' | VERSIONS')
+    $('.float_right.w210.bmp_txt').append('<div class="float_right">CRATE</div>')
+    $('.float_right.w210.bmp_txt').css('font-weight','bold')
+    $('.float_left.w410.day_time').css('font-weight','bold')
+
 
     //Song page Crate management
     if (tracks.length == 2)
@@ -182,7 +191,8 @@ function pageVisuals()
         tid = tracks[1][0].tid;
         dpid = tracks[1][4].dpid;
         dlcnt = tracks[1][2].d_cnt;
-        $('.content_social').before('<div class="float_right reltive"><a id="c_' + tid + '" data-pid="' + dpid + '" class="crt_icon"></a></div>');
+        crate_html = '<i id="c_' + tid + '" data-pid="' + dpid + '" class="fa fa-plus-square fa-lg crt_icon" style="margin-top:45%"></i>'
+        $('.content_social').before('<div class="float_right reltive">' + crate_html + '</div>');
     }
 
      //Crate toggle click hook
@@ -512,40 +522,42 @@ function loadJPlayer()
     bindOnPlay()
 
     $(".jp-play").click(function (event) {
-        $(".jp-progress").removeClass("jp-progress_active");
-        $(".downloadBtn").css('display', 'none');
-        $(".clearHistoryBtn").css('display', 'none');
-
-        //STOLEN FROM DJ CITY (what the actual FUCK)......
-        function az(a) { return String(a).replace(/(.)/g, "$1/"); }
-        var c = $("#jquery_jplayer");
-        d = $(this).closest('[id^="t_"]');
-        e = d.attr("id").match(/[\d]+$/);
-        f = d.data("pid");
-        g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
-
-        var player = $('#jquery_jplayer');
-        var id = $(this).closest('[id^="t_"]').attr('id').match(/[\d]+$/);
-        var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
-        if (player.data("jPlayer").status.media.mp3 === g) {
-            player.jPlayer("play");
-            cpTrack = id;
-        } else {
-            player.jPlayer("setMedia", {
-                mp3: g
-            }).jPlayer("play");
-            cpTrack = id;
-            var ancestor = $(this).closest('[id^="jp_container_"]').attr('id');
-            player.jPlayer({
-                cssSelectorAncestor: '#' + ancestor
-            });
+        if (!($(this).closest('[id^="t_"]').hasClass('ignore'))) { 
+            $(".jp-progress").removeClass("jp-progress_active");
+            $(".downloadBtn").css('display', 'none');
+            $(".clearHistoryBtn").css('display', 'none');
+    
+            //STOLEN FROM DJ CITY (what the actual FUCK)......
+            function az(a) { return String(a).replace(/(.)/g, "$1/"); }
+            var c = $("#jquery_jplayer");
+            d = $(this).closest('[id^="t_"]');
+            e = d.attr("id").match(/[\d]+$/);
+            f = d.data("pid");
+            g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
+    
+            var player = $('#jquery_jplayer');
+            var id = $(this).closest('[id^="t_"]').attr('id').match(/[\d]+$/);
+            var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
+            if (player.data("jPlayer").status.media.mp3 === g) {
+                player.jPlayer("play");
+                cpTrack = id;
+            } else {
+                player.jPlayer("setMedia", {
+                    mp3: g
+                }).jPlayer("play");
+                cpTrack = id;
+                var ancestor = $(this).closest('[id^="jp_container_"]').attr('id');
+                player.jPlayer({
+                    cssSelectorAncestor: '#' + ancestor
+                });
+            }
+            id = id[0];
+            logPlay(id);
+            //----END STOLEN SHIT.
+            $(this).parents(".jp-interface").find(".jp-progress").addClass("jp-progress_active");
+            $(this).parents(".jp-interface").find(".downloadBtn").css('display', 'block');
+            $(this).parents(".jp-interface").find(".clearHistoryBtn").css('display', 'block');
         }
-        id = id[0];
-        logPlay(id);
-        //----END STOLEN SHIT.
-        $(this).parents(".jp-interface").find(".jp-progress").addClass("jp-progress_active");
-        $(this).parents(".jp-interface").find(".downloadBtn").css('display', 'block');
-        $(this).parents(".jp-interface").find(".clearHistoryBtn").css('display', 'block');
     });
 }
 
@@ -1131,6 +1143,13 @@ function queueDataLoad()
                     cPageHtml += '<input type=\"submit\" value=\"Delete All\" onclick=\"return confirm(\'Are you sure you would like to remove all of the tracks in your custom crate?\');\" id=\"removeAll\" class=\"btn\">\r\n<input type=\"submit\" value=\"Clear All History\" onclick=\"return confirm(\'Are you sure you would like to remove all of your play\/download statistics?\');\" id=\"clearAllHistory\" class=\"btn\">';
                     $(".float_left.page_left").append(cPageHtml);
                     $('#crate_count').html(data.length);
+                    $(window).scrollTop($('#customCrateContent').offset().top - ($(window).height() / 2));
+
+                    //REMOVE TOP PICKS FROM SCRIPT FUNCTIONALITY
+                    $('[id^=t_]').each(function(k,v){
+                        $(this).addClass('ignore')
+                        $(this).find('.jp-play').remove()
+                    })
 
                     $(data).each(function(){
                         var tid = this.tid;
