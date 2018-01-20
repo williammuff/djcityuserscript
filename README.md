@@ -1,6 +1,20 @@
 # DJ City User Script
 
 ## Features
+
+### Installation
+Depending on your browser install the proper User script Extension:
+-	FireFox - GreaseMonkey 
+https://addons.mozilla.org/en-us/firefox/addon/greasemonkey/ 
+-	Chrome - TamperMonkey 
+https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldmpobfkfo?utm_source=inline-install-disabled 
+
+2. Once installed go to this link to install the DJ City User script:
+
+http://djmuff.com/userscripts/djcity.user.js 
+*once accessed the extension will prompt you to install 
+
+
 ### 1-Click & Bulk Downloads with auto rating
 The script allows for easily navigating the DJcity website. These download and auto rating features can be taken advantage of in many ways. I recommend using the keyboard (arrow keys) to navigate with this script.
 
@@ -34,3 +48,4 @@ The ability to add songs to a virtual crate. A perfect use case for this is capt
  ### Other (Misc)
  		- Auto Rating if navigating to track page.
  		- Ability (as a setting) to download all versions (when downloading)
+		
