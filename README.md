@@ -2,7 +2,7 @@
 
 ## Features
 ### 1-Click & Bulk Downloads with auto rating
-The script allows for easily navigating the DJcity website. These download and auto rating features can be utilized. These download and auto rating features can be taken advantage of in many ways. I recommend using the keyboard (arrow keys) to navigate with this script.
+The script allows for easily navigating the DJcity website. These download and auto rating features can be taken advantage of in many ways. I recommend using the keyboard (arrow keys) to navigate with this script.
 
 ### Playback and Download History
 The script will record a track has been played after 2 seconds of playing. The track itself will be grayed out if previously played. A download indicator will also be displayed if the song (any version) has been downloaded, this visual is a red line at the bottom of the track.
