@@ -3,17 +3,17 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.10
+// @version       1.11
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
 // @require   //ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js
-// @require   http://djmuff.com/djcity/includes/nprogress.js
+// @require   http://wmuff.bounceme.net/djcity/includes/nprogress.js
 // @require   //cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal.min.js
-// @require   http://djmuff.com/djcity/includes/jquery.modal.js
+// @require   http://wmuff.bounceme.net/djcity/includes/jquery.modal.js
 // @require   https://use.fontawesome.com/ca420a7d85.js
 // @require   https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
-// @require   file:///C:/djcityuserscript/djcity.user.js
+// require   file:///C:/djcityuserscript/djcity.user.js
 // @grant    GM_openInTab
 //
 // ==/UserScript==
@@ -22,7 +22,7 @@ var cPage;
 var tracks = [];
 var email;
 var queuePage = '/mydjcity';
-var hosted_url = 'http://djmuff.com/djcity/';
+var hosted_url = 'http://wmuff.bounceme.net/djcity/';
 var djcity_host;
 var cpTrack;
 var debugLogging
@@ -67,7 +67,7 @@ function hotboxTopPicksAddInfo()
             $(vv).attr('id',k + '_' + tid)
             chart_data.push([{'tid':tid},{'c_flg':''},{'d_cnt':''},{'p_cnt':''},{'dpid':''}]);
         })
-    
+
        $.ajax({
             url: hosted_url + 'info.php',
             type: "POST",
@@ -78,12 +78,12 @@ function hotboxTopPicksAddInfo()
             success:function(result){
                 $(result).each(function(kkk,vvv){
                     tr_obj = $('#' + k + '_' + vvv[0]['tid'])
-                    
+
                     if (vvv[2]['d_cnt'] > 0) tr_obj.addClass('dlBoxSide')
                     if (vvv[3]['p_cnt'] > 0) tr_obj.find('.pool_txt').addClass('played')
                 })
             }
-        });    
+        });
     }
 })
 }
@@ -125,10 +125,10 @@ function addStyleCSS()
     $("<style>").prop("type", "text/css").html('.clearHistoryBtn {\r\n    float: left;\r\n    display: block;\r\n    background: url(data:image\/png;base64,iVBORw0KGgoAAAANSUhEUgAAABEAAAAyCAYAAAC6VTBiAAAACXBIWXMAAAsTAAALEwEAmpwYAAAKT2lDQ1BQaG90b3Nob3AgSUNDIHByb2ZpbGUAAHjanVNnVFPpFj333vRCS4iAlEtvUhUIIFJCi4AUkSYqIQkQSoghodkVUcERRUUEG8igiAOOjoCMFVEsDIoK2AfkIaKOg6OIisr74Xuja9a89+bN\/rXXPues852zzwfACAyWSDNRNYAMqUIeEeCDx8TG4eQuQIEKJHAAEAizZCFz\/SMBAPh+PDwrIsAHvgABeNMLCADATZvAMByH\/w\/qQplcAYCEAcB0kThLCIAUAEB6jkKmAEBGAYCdmCZTAKAEAGDLY2LjAFAtAGAnf+bTAICd+Jl7AQBblCEVAaCRACATZYhEAGg7AKzPVopFAFgwABRmS8Q5ANgtADBJV2ZIALC3AMDOEAuyAAgMADBRiIUpAAR7AGDIIyN4AISZABRG8lc88SuuEOcqAAB4mbI8uSQ5RYFbCC1xB1dXLh4ozkkXKxQ2YQJhmkAuwnmZGTKBNA\/g88wAAKCRFRHgg\/P9eM4Ors7ONo62Dl8t6r8G\/yJiYuP+5c+rcEAAAOF0ftH+LC+zGoA7BoBt\/qIl7gRoXgugdfeLZrIPQLUAoOnaV\/Nw+H48PEWhkLnZ2eXk5NhKxEJbYcpXff5nwl\/AV\/1s+X48\/Pf14L7iJIEyXYFHBPjgwsz0TKUcz5IJhGLc5o9H\/LcL\/\/wd0yLESWK5WCoU41EScY5EmozzMqUiiUKSKcUl0v9k4t8s+wM+3zUAsGo+AXuRLahdYwP2SycQWHTA4vcAAPK7b8HUKAgDgGiD4c93\/+8\/\/UegJQCAZkmScQAAXkQkLlTKsz\/HCAAARKCBKrBBG\/TBGCzABhzBBdzBC\/xgNoRCJMTCQhBCCmSAHHJgKayCQiiGzbAdKmAv1EAdNMBRaIaTcA4uwlW4Dj1wD\/phCJ7BKLyBCQRByAgTYSHaiAFiilgjjggXmYX4IcFIBBKLJCDJiBRRIkuRNUgxUopUIFVIHfI9cgI5h1xGupE7yAAygvyGvEcxlIGyUT3UDLVDuag3GoRGogvQZHQxmo8WoJvQcrQaPYw2oefQq2gP2o8+Q8cwwOgYBzPEbDAuxsNCsTgsCZNjy7EirAyrxhqwVqwDu4n1Y8+xdwQSgUXACTYEd0IgYR5BSFhMWE7YSKggHCQ0EdoJNwkDhFHCJyKTqEu0JroR+cQYYjIxh1hILCPWEo8TLxB7iEPENyQSiUMyJ7mQAkmxpFTSEtJG0m5SI+ksqZs0SBojk8naZGuyBzmULCAryIXkneTD5DPkG+Qh8lsKnWJAcaT4U+IoUspqShnlEOU05QZlmDJBVaOaUt2ooVQRNY9aQq2htlKvUYeoEzR1mjnNgxZJS6WtopXTGmgXaPdpr+h0uhHdlR5Ol9BX0svpR+iX6AP0dwwNhhWDx4hnKBmbGAcYZxl3GK+YTKYZ04sZx1QwNzHrmOeZD5lvVVgqtip8FZHKCpVKlSaVGyovVKmqpqreqgtV81XLVI+pXlN9rkZVM1PjqQnUlqtVqp1Q61MbU2epO6iHqmeob1Q\/pH5Z\/YkGWcNMw09DpFGgsV\/jvMYgC2MZs3gsIWsNq4Z1gTXEJrHN2Xx2KruY\/R27iz2qqaE5QzNKM1ezUvOUZj8H45hx+Jx0TgnnKKeX836K3hTvKeIpG6Y0TLkxZVxrqpaXllirSKtRq0frvTau7aedpr1Fu1n7gQ5Bx0onXCdHZ4\/OBZ3nU9lT3acKpxZNPTr1ri6qa6UbobtEd79up+6Ynr5egJ5Mb6feeb3n+hx9L\/1U\/W36p\/VHDFgGswwkBtsMzhg8xTVxbzwdL8fb8VFDXcNAQ6VhlWGX4YSRudE8o9VGjUYPjGnGXOMk423GbcajJgYmISZLTepN7ppSTbmmKaY7TDtMx83MzaLN1pk1mz0x1zLnm+eb15vft2BaeFostqi2uGVJsuRaplnutrxuhVo5WaVYVVpds0atna0l1rutu6cRp7lOk06rntZnw7Dxtsm2qbcZsOXYBtuutm22fWFnYhdnt8Wuw+6TvZN9un2N\/T0HDYfZDqsdWh1+c7RyFDpWOt6azpzuP33F9JbpL2dYzxDP2DPjthPLKcRpnVOb00dnF2e5c4PziIuJS4LLLpc+Lpsbxt3IveRKdPVxXeF60vWdm7Obwu2o26\/uNu5p7ofcn8w0nymeWTNz0MPIQ+BR5dE\/C5+VMGvfrH5PQ0+BZ7XnIy9jL5FXrdewt6V3qvdh7xc+9j5yn+M+4zw33jLeWV\/MN8C3yLfLT8Nvnl+F30N\/I\/9k\/3r\/0QCngCUBZwOJgUGBWwL7+Hp8Ib+OPzrbZfay2e1BjKC5QRVBj4KtguXBrSFoyOyQrSH355jOkc5pDoVQfujW0Adh5mGLw34MJ4WHhVeGP45wiFga0TGXNXfR3ENz30T6RJZE3ptnMU85ry1KNSo+qi5qPNo3ujS6P8YuZlnM1VidWElsSxw5LiquNm5svt\/87fOH4p3iC+N7F5gvyF1weaHOwvSFpxapLhIsOpZATIhOOJTwQRAqqBaMJfITdyWOCnnCHcJnIi\/RNtGI2ENcKh5O8kgqTXqS7JG8NXkkxTOlLOW5hCepkLxMDUzdmzqeFpp2IG0yPTq9MYOSkZBxQqohTZO2Z+pn5mZ2y6xlhbL+xW6Lty8elQfJa7OQrAVZLQq2QqboVFoo1yoHsmdlV2a\/zYnKOZarnivN7cyzytuQN5zvn\/\/tEsIS4ZK2pYZLVy0dWOa9rGo5sjxxedsK4xUFK4ZWBqw8uIq2Km3VT6vtV5eufr0mek1rgV7ByoLBtQFr6wtVCuWFfevc1+1dT1gvWd+1YfqGnRs+FYmKrhTbF5cVf9go3HjlG4dvyr+Z3JS0qavEuWTPZtJm6ebeLZ5bDpaql+aXDm4N2dq0Dd9WtO319kXbL5fNKNu7g7ZDuaO\/PLi8ZafJzs07P1SkVPRU+lQ27tLdtWHX+G7R7ht7vPY07NXbW7z3\/T7JvttVAVVN1WbVZftJ+7P3P66Jqun4lvttXa1ObXHtxwPSA\/0HIw6217nU1R3SPVRSj9Yr60cOxx++\/p3vdy0NNg1VjZzG4iNwRHnk6fcJ3\/ceDTradox7rOEH0x92HWcdL2pCmvKaRptTmvtbYlu6T8w+0dbq3nr8R9sfD5w0PFl5SvNUyWna6YLTk2fyz4ydlZ19fi753GDborZ752PO32oPb++6EHTh0kX\/i+c7vDvOXPK4dPKy2+UTV7hXmq86X23qdOo8\/pPTT8e7nLuarrlca7nuer21e2b36RueN87d9L158Rb\/1tWeOT3dvfN6b\/fF9\/XfFt1+cif9zsu72Xcn7q28T7xf9EDtQdlD3YfVP1v+3Njv3H9qwHeg89HcR\/cGhYPP\/pH1jw9DBY+Zj8uGDYbrnjg+OTniP3L96fynQ89kzyaeF\/6i\/suuFxYvfvjV69fO0ZjRoZfyl5O\/bXyl\/erA6xmv28bCxh6+yXgzMV70VvvtwXfcdx3vo98PT+R8IH8o\/2j5sfVT0Kf7kxmTk\/8EA5jz\/GMzLdsAAAAgY0hSTQAAeiUAAICDAAD5\/wAAgOkAAHUwAADqYAAAOpgAABdvkl\/FRgAAANFJREFUeNrslsEKglAQRc+omyBb1Ie2bvPEQeh\/TXAjTIsUUtNM04q8y3m8w+VefYyYHx6BM7DhdeXAScwPL8CW8crE\/NCYKI836IMQkYGQIu2emQ2EBLs6qEhvs7kyeV5x5abDxULtVDk081nOyWHfbqPHzfrvPIZkExmZB0TlMzdGORCJmbG2s0J+BhKo6uStwAOSkQDKe4k3ca0A2P5Lxc65QbNeiKrWLjnnUNUZP7a+w3s3XS6WaafKoZnPck5EpNVGnxuJ43jdCr51K7gOAIgqTtg\/xWFHAAAAAElFTkSuQmCC);\r\n    width: 17px;\r\n    height: 20px;\r\n    overflow: hidden;\r\n    margin: 7px 0 0 -50px;\r\n    display: none;\r\n}\r\n\r\n.clearHistoryBtn:hover {\r\n    background-position: 0 -30px;\r\n}').appendTo("head");
     $("<style>").prop("type", "text/css").html(".crt_icon_lit { color:red; }").appendTo("head")
     $("<style>").prop("type", "text/css").html('.dlBox {float:right; width:100%; height:1px; background:red; margin-top:34px;}').appendTo("head");
-    
+
     //CSS files added to page
-    addCSS('http://djmuff.com/djcity/includes/nprogress.css')
-    addCSS('http://djmuff.com/djcity/includes/jquery.modal.css')
+    addCSS(hosted_url + 'includes/nprogress.css')
+    addCSS(hosted_url + 'includes/jquery.modal.css')
     addCSS('https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css')
 
     //Modal HTML
@@ -378,7 +378,7 @@ function crateFlip(tid,dpid,upd_flg)
         {
             tracks.splice(ap, 1);
         }
-    
+
         crateTracks = $('#customCrateContent').find('[id^=t_]')
         $('#crate_count').html(crateTracks.length)
         if (crateTracks.length == 0) clearCrateVisuals();
@@ -448,7 +448,7 @@ function setSettings(flg)
 function setUserEmail(flg)
 {
     user_id = readCookie("userEmail");
-    
+
     if(user_id == null || flg == 1)
     {
         user_id = prompt('Please enter your email address for "crate tracking" purposes');
@@ -459,15 +459,15 @@ function setUserEmail(flg)
         }
         else if (!(readCookie("userEmail"))) {
             user_id = prompt('Please enter your email address for "crate tracking" purposes');
-        }    
+        }
     }
     else {
-        
+
         $('#navigation_right').append('<li><a id="userNameUpdate" href="#">' + user_id + '</a></li>');
         $('#navigation_right').append('<a href="#ex1" rel="modal:open"><i style="color:white;" class="fa fa-cogs fa-2x" aria-hidden="true"></i></a>')
         $("#userNameUpdate").mouseup(function(event){
             setUserEmail(1);
-        });        
+        });
         email = readCookie('userEmail');
         if (debugLogging) console.log('setUserEmail:','email',email)
         setSettings()
@@ -522,11 +522,11 @@ function loadJPlayer()
     bindOnPlay()
 
     $(".jp-play").click(function (event) {
-        if (!($(this).closest('[id^="t_"]').hasClass('ignore'))) { 
+        if (!($(this).closest('[id^="t_"]').hasClass('ignore'))) {
             $(".jp-progress").removeClass("jp-progress_active");
             $(".downloadBtn").css('display', 'none');
             $(".clearHistoryBtn").css('display', 'none');
-    
+
             //STOLEN FROM DJ CITY (what the actual FUCK)......
             function az(a) { return String(a).replace(/(.)/g, "$1/"); }
             var c = $("#jquery_jplayer");
@@ -534,7 +534,7 @@ function loadJPlayer()
             e = d.attr("id").match(/[\d]+$/);
             f = d.data("pid");
             g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
-    
+
             var player = $('#jquery_jplayer');
             var id = $(this).closest('[id^="t_"]').attr('id').match(/[\d]+$/);
             var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
@@ -767,7 +767,7 @@ function playTrack(track_id,force_play = 1)
             e = d.attr("id").match(/[\d]+$/);
             f = d.data("pid");
             g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
-    //------------END STOLEN   
+    //------------END STOLEN
     cpTrack = id;
     player.jPlayer("setMedia", {
         mp3: g
@@ -991,8 +991,8 @@ function downloadTrack(track_id, version, email)
                             }
                         }
                     }
-                  });  
-            } 
+                  });
+            }
         }
     }
 }
@@ -1024,8 +1024,8 @@ function findVersionID(vt, version)
         if (!robj) {
             console.log('Version Not Found','Version Types->',vt,'Version->',version)
             $.getJSON(hosted_url + 'missing_version.php?version=' + encodeURIComponent(version));
-        } 
-        
+        }
+
     }
     return robj;
 }
@@ -1162,7 +1162,7 @@ function queueDataLoad()
                                 t_info = getTrackLabel(dt)
                                 title = t_info['title']
                                 artist = t_info['artist']
-                                
+
                                 //Add track to crate div
                                 $("#customCrateContent").append(trackHTML.replace("t_[TID]","t_" + tid).replace('[DPID]',dpid).replace('[TITLE]',title).replace('[ARTIST]',artist).replace('[JPNUM1]',$('[id^=t_]').length).replace('[JPNUM2]',$('[id^=t_]').length).replace('[LINK1]',url).replace('[LINK2]',url));
                                 var vTypes = trackVersionDownload(dt);
