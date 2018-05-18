@@ -3,26 +3,31 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.11
+// @version       1.13
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
 // @require   //ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js
-// @require   http://wmuff.bounceme.net/djcity/includes/nprogress.js
+// @require   http://williammuff.us/djcity/includes/nprogress.js
 // @require   //cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal.min.js
-// @require   http://wmuff.bounceme.net/djcity/includes/jquery.modal.js
+// @require   http://williammuff.us/djcity/includes/jquery.modal.js
 // @require   https://use.fontawesome.com/ca420a7d85.js
 // @require   https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
 // require   file:///C:/djcityuserscript/djcity.user.js
 // @grant    GM_openInTab
 //
 // ==/UserScript==
+var cver = 1.13
+var releaseNotes = [
+    {'id':1.13,"notes":["Added Banner Message To Show Changes","Added Bug Report section in settings pane","Changed host to williammuff.us"]}
+]
+
 var cUrl = window.location.href;
 var cPage;
 var tracks = [];
 var email;
 var queuePage = '/mydjcity';
-var hosted_url = 'http://wmuff.bounceme.net/djcity/';
+var hosted_url = 'http://williammuff.us/djcity/';
 var djcity_host;
 var cpTrack;
 var debugLogging
@@ -39,7 +44,8 @@ function run()
 {
     djcity_host = getLocation(document.URL);
     addStyleCSS();
-	setUserEmail(0);
+	showBanner();
+    setUserEmail(0);
     autoRateAttempt();
     loadJPlayer();
     buildTrackArray();
@@ -118,6 +124,7 @@ function addStyleCSS()
 {
     //Custom Style Classes (generic)
     $("<style>").prop("type", "text/css").html("div.jp-progress_active  { z-index: 4; }")
+    $("<style>").prop("type", "text/css").html(".releaseNotesBanner  { list-style-type:square; }")
     $("<style>").prop("type", "text/css").html(".record_pool_listing li .pool_icon li{float:left;width:25px;height:35px;text-align:center;border-bottom:0px dotted #000000;border-left:1px dotted #000000;}").appendTo("head");
     $("<style>").prop("type", "text/css").html(".played { opacity: 0.5; }").appendTo("head");
     $("<style>").prop("type", "text/css").html(".dlBoxSide { border-bottom: 2px solid red;").appendTo("head");
@@ -131,12 +138,15 @@ function addStyleCSS()
     addCSS(hosted_url + 'includes/jquery.modal.css')
     addCSS('https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.css')
 
-    //Modal HTML
+	//Modal HTML
 	shtml = '<div id="ex1"style="display:none;"><h1>Settings</h1><br>'
     shtml += 'Download All Versions(when download is initiated)<select id="downloadAllFlag"style="width:100%"><option disabled selected value></option><option value="No">No</option><option value="Yes">Yes</option></select>'
     shtml += 'Skip Into Track(if set player will seek that%into the track)<input type="text"id="skipIntoPCT"style="width:100%"/>'
     shtml += '<div style="width:100%;"><input style="margin-top:20px;float:right;" type="button" id="saveSettings" value="Save"/></div>'
-    shtml += '<br><br><a target="_blank" href="https://github.com/williammuff/djcityuserscript/blob/master/README.md">Click here for full usage guide</a>'
+    shtml += '<br><br>'
+    shtml += '<br>Report a bug<textarea name="message" rows="10" id="bugMessage"style="width:100%"/>'
+    shtml += '<input style="margin-top:20px;float:right;" type="button" id="sendBug" value="Send Bug"/>'
+    shtml += '<div><br><br><a target="_blank" href="https://github.com/williammuff/djcityuserscript/blob/master/README.md">Click here for full usage guide</a></div>'
     shtml += '</div>'
     $('body').append(shtml)
 
@@ -234,6 +244,20 @@ function pageVisuals()
         setSettings(true);
         bindOnPlay()
         $.modal.close();
+    })
+
+    $('#sendBug').click(function(){
+        burl = hosted_url + 'bug.php?email=' + encodeURIComponent(email) + '&bug=' + encodeURIComponent($('#bugMessage').val())
+        $.getJSON(burl,function(data){
+            console.log(data)
+            $.alert({
+                title: 'Success',
+                useBootstrap: false,
+                boxWidth: '30%',
+                content: 'Your bug was reported',
+                type: "green"
+            });
+        })
     })
 
     //Click icon support for instant downloads of specific version
@@ -422,7 +446,6 @@ function findTrackInArray(tid)
     });
     return fi;
 }
-
 //-------------COOKIE FUNCTIONS--------------
 function setSettings(flg)
 {
@@ -443,6 +466,53 @@ function setSettings(flg)
     if (debugLogging) console.log('setSettings:','download_all_flg',download_all_flg,'skip_into_percentage',skip_into_percentage)
     $("#downloadAllFlag").val(download_all_flg);
     $('#skipIntoPCT').val(skip_into_percentage)
+}
+
+function showBanner() {
+    user_id = readCookie("userEmail");
+
+    if(user_id != null)
+    {
+        var pver = readCookie("bannerVersion");
+        if (!(isNumeric(pver))) pver = 0.00
+        else pver = parseFloat(pver)
+        if (Math.abs(pver) != cver || pver > 0) {
+            var releaseNotesContent = ''
+            $(releaseNotes).each(function(k,v) {
+                if (v['id'] == cver) {
+                    $(v['notes']).each(function(kk,vv) {
+                        releaseNotesContent = releaseNotesContent + '<li>' + vv + '</li>'
+                    })
+                }
+            })
+            if (releaseNotesContent != '') {
+                releaseNotesContent = '<ul class="releaseNotesBanner">' + releaseNotesContent + '</ul>';
+                $.confirm({
+                    title: 'Version (' + cver + ') Updates',
+                    boxWidth: '30%',
+                    useBootstrap: false,
+                    backgroundDismiss: true,
+                    type: 'red',
+                    content: releaseNotesContent,
+                    buttons: {
+                        close: {
+                            text: "Don't Show This Again",
+                            keys: ['enter'],
+                            action: function(){
+                                eraseCookie('bannerVersion');
+                                createCookie('bannerVersion',cver * -1,365);
+                                console.log('cookie set with',cver * -1)
+                            }
+                        }
+                    }
+                });
+            }
+        }
+    }
+}
+
+function isNumeric(n) {
+  return !isNaN(parseFloat(n)) && isFinite(n);
 }
 
 function setUserEmail(flg)
@@ -512,13 +582,29 @@ var allowTrackMovement = 1;
 var currentTrackIndex;
 function loadJPlayer()
 {
+    //INIT REAL JPLAYER
     $("#jquery_jplayer").jPlayer({
         ready: function () {},
         swfPath: "http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/obj/",
         supplied: "mp3",
-        preload: "none"
+        preload: "auto"
     });
 
+    //ADD & INIT SECOND JPLAYER FOR CACHING (hopefully)
+    $('#jquery_jplayer').after('<div id="jquery_jplayer_cache" class="jp-jplayer" style="width: 0px; height: 0px;"></div>')
+    $("#jquery_jplayer_cache").jPlayer({
+        ready: function () {},
+        swfPath: "http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/obj/",
+        supplied: "mp3",
+        preload: "auto",
+        load: function (e) { console.log(e) }
+    });
+    //CACHE TESTING
+    /*
+    $("#jquery_jplayer_cache").bind($.jPlayer.event.loadeddata, function(event) {
+        //console.log('loaded some dater',event)
+    });
+    */
     bindOnPlay()
 
     $(".jp-play").click(function (event) {
@@ -567,8 +653,7 @@ function bindOnPlay(){
     if (skip_pct) {
         $("#jquery_jplayer").bind($.jPlayer.event.loadeddata, function(event) {
         //ONPLAY
-
-        $("#jquery_jplayer").jPlayer("playHead", skip_pct);
+            $("#jquery_jplayer").jPlayer("playHead", skip_pct);
         });
     }
 
@@ -612,18 +697,14 @@ function seekPlayer(direction, seconds_to_skip)
 
 }
 
+
 function skipPlayer(direction)
 {
     currentTrackSrc = $("#jquery_jplayer").data("jPlayer").status.src.replace('http://preview.cdn.djcity.com/', '');
     currentTrack = currentTrackSrc.replace('.mp3','');
     currentTrack = cpTrack;
 
-    $.each(tracks, function(i){
-        if (tracks[i][0]['tid'] == currentTrack){
-            currentTrackIndex = i;
-        }
-    });
-
+    currentTrackIndex = findTrackInArray(currentTrack)
 
     if (currentTrackSrc != '');
     {
@@ -747,16 +828,29 @@ function pausePlayer()
     }
 }
 
-function playTrack(track_id,force_play = 1)
-{
-    $(".jp-progress").removeClass("jp-progress_active");
-    $(".downloadBtn").css('display', 'none');
-    $(".clearHistoryBtn").css('display', 'none');
-    var player = $('#jquery_jplayer');
-    var id = track_id;
-    var idDiv = $('#t_' + track_id);
-    var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
+function cacheRoutine(tid) {
+    var cachePlayer = $('#jquery_jplayer_cache');
+    cindex = findTrackInArray(tid) + 1
+    cacheAhead  = 1
 
+    $(tracks).each(function(k,vv) {
+        if (k + 1 > cindex & k + 1 <= cindex + cacheAhead) {
+            mlp = k + 1 - cindex
+
+            setTimeout(function(){
+                cacheID = tracks[k][0]['tid']
+                cachePlayer.jPlayer("setMedia", { mp3: getMP3URL(cacheID) }).jPlayer("load")
+                //console.log(cacheID,cachePlayer.data("jPlayer"))
+            }, 0 * mlp);
+
+            //$.ajax({url: getMP3URL(cacheID)});
+        }
+    })
+}
+
+function getMP3URL(tid)
+{
+    var idDiv = $('#t_' + tid);
     //STOLEN FROM DJ CITY PAGE
     function az(a) {
         return String(a).replace(/(.)/g, "$1/");
@@ -768,9 +862,23 @@ function playTrack(track_id,force_play = 1)
             f = d.data("pid");
             g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
     //------------END STOLEN
+    return g
+}
+
+function playTrack(track_id,force_play = 1)
+{
+    cacheRoutine(track_id)
+    $(".jp-progress").removeClass("jp-progress_active");
+    $(".downloadBtn").css('display', 'none');
+    $(".clearHistoryBtn").css('display', 'none');
+    var player = $('#jquery_jplayer');
+    var id = track_id;
+    
+    var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
+
     cpTrack = id;
     player.jPlayer("setMedia", {
-        mp3: g
+        mp3: getMP3URL(track_id)
     }).jPlayer("play");
     cpTrack = id;
 
