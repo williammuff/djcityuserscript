@@ -3,7 +3,7 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.13
+// @version       1.17
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
@@ -17,20 +17,33 @@
 // @grant    GM_openInTab
 //
 // ==/UserScript==
-var cver = 1.13
 var releaseNotes = [
-    {'id':1.13,"notes":["Added Banner Message To Show Changes","Added Bug Report section in settings pane","Changed host to williammuff.us"]}
+    {
+        'id':1.13,"notes":["Added Banner Message To Show Changes","Added Bug Report section in settings pane","Changed host to williammuff.us"],
+        'id':1.14,"notes":["Added option to set delay for marking as played in settings section."],
+        'id':1.15,"notes":['Updated all buttons on "crate" page to properly ensure confirmation.','The "Clear All History" button now also removes crate information'],
+        'id':1.16,"notes":[
+            'Added user script top box (most popular downloads).',
+            'Added "OPEN ALL" for all side panel boxes (hot box,top picks,userscript top box).'
+        ],
+        'id':1.18,"notes":[
+            'External css/js/php files are now served over HTTPS to avoid mixed content failures on latest browsers.'
+        ]
+    }
 ]
+var cver = releaseNotes[releaseNotes.length - 1]['id'];
+console.log(cver)
 
 var cUrl = window.location.href;
 var cPage;
 var tracks = [];
 var email;
 var queuePage = '/mydjcity';
-var hosted_url = 'http://williammuff.us/djcity/';
+var hosted_url = 'https://williammuff.us:444/djcity/';
 var djcity_host;
 var cpTrack;
 var debugLogging
+var mark_played_after;
 //debugLogging = true;
 
 //PROGRESS BAR FUNCTIONALITY
@@ -58,40 +71,119 @@ function run()
 
 function hotboxTopPicksAddInfo()
 {
- $('.chart_list').each(function(k,v){
-    chart_data = []
-    //SET EMAIL for first record
-    chart_data.push([{'tid':email},{'c_flg':''},{'d_cnt':''},{'p_cnt':''},{'dpid':''}]);
-    //SNAG TID's IN CHART
-    if ($(this).is(":visible")) {
-        $(this).find('li').each(function(kk,vv){
-            cn = $(vv).children()
-            trackurl = $(cn[0]).attr('href')
-            st = trackurl.indexOf('----') + 4
-            ed = trackurl.length
-            tid = trackurl.substring(st,ed).replace('.htm','')
-            $(vv).attr('id',k + '_' + tid)
-            chart_data.push([{'tid':tid},{'c_flg':''},{'d_cnt':''},{'p_cnt':''},{'dpid':''}]);
+    chartListMark()
+
+    //REALIGN TOP PICKS TO BOTTOM
+    oh = $('.org_heading').parent()
+    $(oh).detach()
+    var ab = $('.trendsbtn').parent().children()
+    ab = ab[ab.length-3]
+    $(ab).append('<div class="spacer20"></div>')
+    $(ab).append(oh)
+
+
+
+    //LOAD SCRIPT TOP 5
+    var ajax_count = 0
+    var ubox_count = 0
+    var uBoxHTML = $('</div><div><div style="background:#00ef76;" class="sky_heading">USERSCRIPT TOP BOX<div class="uscript_openall" style="float:right;">OPEN ALL</div></div><div><ol id="uscript_topbox" class="chart_list">' + '<div id="1"></div><div id="2"></div><div id="3"></div><div id="4"></div><div id="5"></div>' + '</ol></div></div>')
+
+    $.getJSON(hosted_url + 'info.php',function(d){
+
+        ubox_count = d.length
+        $(d).each(function(k,v){
+            turl = '/record-pool_track.aspx?rid=' + v['tid'];
+            $.ajax({
+                url: turl,
+                success: function(dt) {
+
+                    t_info = getTrackLabel(dt)
+                    title = t_info['title']
+                    artist = t_info['artist']
+                    ajax_count++
+
+                    uBoxTrackHTML = $('<div><li id="uscript_tid"><a id="url" href="[URL]" target="_blank"><div id="rank" class="float_left number"></div><div class="float_right pool_txt"><div id="title"></div><div id="artist" class="artist"></div></div><div class="clear"></div></a></li></div>')
+                    $(uBoxTrackHTML).find('#uscript_tid').attr('id','2_' + v['tid'])
+                    $(uBoxTrackHTML).find('#url').attr('href','/record-pool_track.aspx?rid=' + v['tid'])
+                    $(uBoxTrackHTML).find('#rank').html(k + 1)
+                    $(uBoxTrackHTML).find('#title').html(title)
+                    $(uBoxTrackHTML).find('#artist').html(artist)
+
+                    $(uBoxHTML).find('#uscript_topbox').find('#' + (k + 1)).append(uBoxTrackHTML)
+
+                    if (ajax_count == ubox_count) {
+                        $('#recordpool_re').append(uBoxHTML)
+                        chartListMark()
+                        openAllChartsForYou()
+
+                    }
+                }
+            })
+
         })
+    })
 
-       $.ajax({
-            url: hosted_url + 'info.php',
-            type: "POST",
-            crossDomain: true,
-            data: JSON.stringify(chart_data),
-            contentType: 'application/json; charset=utf-8',
-            dataType: 'json',
-            success:function(result){
-                $(result).each(function(kkk,vvv){
-                    tr_obj = $('#' + k + '_' + vvv[0]['tid'])
 
-                    if (vvv[2]['d_cnt'] > 0) tr_obj.addClass('dlBoxSide')
-                    if (vvv[3]['p_cnt'] > 0) tr_obj.find('.pool_txt').addClass('played')
-                })
-            }
-        });
-    }
-})
+
+}
+
+function openAllChartsForYou() {
+
+       //ADD OPEN ALL LINKS TO RECORD POOL TOP BOX AND TOP PICKS
+    var openAllClasses = ["red_heading", "org_heading"];
+    var openAllHTML = '<div class="uscript_openall" style="float:right;">OPEN ALL</div>'
+    $("div[class$='_heading']").each(function(k,v){
+        cl = $(v).attr('class')
+        if (openAllClasses.indexOf(cl) > -1) $(v).append(openAllHTML)
+    })
+
+     $('.uscript_openall').click(function(e) {
+        cl = $(e.target).parent().parent().find('.chart_list').find('li')
+        $(cl).each(function(k,v){
+            url = 'http://www.' + djcity_host + $(v).find('a').attr('href')
+            GM_openInTab(url)
+        })
+    })
+}
+
+function chartListMark()
+{
+ $('.chart_list').each(function(k,v){
+
+        chart_data = []
+        //SET EMAIL for first record
+        chart_data.push([{'tid':email},{'c_flg':''},{'d_cnt':''},{'p_cnt':''},{'dpid':''}]);
+        //SNAG TID's IN CHART
+        if ($(this).is(":visible")) {
+            $(this).find('li').each(function(kk,vv){
+                cn = $(vv).children()
+                trackurl = $(cn[0]).attr('href')
+                if (trackurl.indexOf('rid=') > -1) st = trackurl.indexOf('rid=') + 4
+                else st = trackurl.indexOf('----') + 4
+                ed = trackurl.length
+                tid = trackurl.substring(st,ed).replace('.htm','')
+                $(vv).attr('id',k + '_' + tid)
+                chart_data.push([{'tid':tid},{'c_flg':''},{'d_cnt':''},{'p_cnt':''},{'dpid':''}]);
+            })
+
+            $.ajax({
+                url: hosted_url + 'info.php',
+                type: "POST",
+                crossDomain: true,
+                data: JSON.stringify(chart_data),
+                contentType: 'application/json; charset=utf-8',
+                dataType: 'json',
+                success:function(result){
+                    $(result).each(function(kkk,vvv){
+                        tr_obj = $('#' + k + '_' + vvv[0]['tid'])
+
+                        if (vvv[2]['d_cnt'] > 0) tr_obj.addClass('dlBoxSide')
+                        if (vvv[3]['p_cnt'] > 0) tr_obj.find('.pool_txt').addClass('played')
+                    })
+                }
+            });
+        }
+    })
 }
 
 function autoRateAttempt()
@@ -142,6 +234,7 @@ function addStyleCSS()
 	shtml = '<div id="ex1"style="display:none;"><h1>Settings</h1><br>'
     shtml += 'Download All Versions(when download is initiated)<select id="downloadAllFlag"style="width:100%"><option disabled selected value></option><option value="No">No</option><option value="Yes">Yes</option></select>'
     shtml += 'Skip Into Track(if set player will seek that%into the track)<input type="text"id="skipIntoPCT"style="width:100%"/>'
+    shtml += 'Delay after play to mark as played?(in milliseconds, defaults to 1000)<input type="text"id="markPlayedAfter"style="width:100%"/>'
     shtml += '<div style="width:100%;"><input style="margin-top:20px;float:right;" type="button" id="saveSettings" value="Save"/></div>'
     shtml += '<br><br>'
     shtml += '<br>Report a bug<textarea name="message" rows="10" id="bugMessage"style="width:100%"/>'
@@ -233,12 +326,7 @@ function pageVisuals()
     });
 
     //Clear all history
-    $('#ctl00_PageContent_pnlOrderHistory').append('<p align="center"><input value="Clear All History" class="UpdateAccountButton" id="clearAllHistory" type="submit"></p>');
-    $('#clearAllHistory').click(function(e){
-       clearHistory();
-       e.preventDefault();
-       window.location.reload();
-    });
+    //$('#ctl00_PageContent_pnlOrderHistory').append('<p align="center"><input value="Clear All History" class="UpdateAccountButton" id="clearAllHistory" type="submit"></p>');
 
     $('#saveSettings').click(function(){
         setSettings(true);
@@ -452,20 +540,25 @@ function setSettings(flg)
     if(flg) {
        eraseCookie('downloadAllFlag');
        eraseCookie('skipIntoPCT');
+       eraseCookie('markPlayedAfter');
        createCookie('downloadAllFlag',$("#downloadAllFlag").val(),365);
        createCookie('skipIntoPCT',$('#skipIntoPCT').val(),365);
+       createCookie('markPlayedAfter',$('#markPlayedAfter').val(),365);
     }
 
     var download_all_flg = readCookie('downloadAllFlag')
     var skip_into_percentage = readCookie('skipIntoPCT')
+    mark_played_after = readCookie('markPlayedAfter')
     if (!(download_all_flg)) {
         download_all_flg = 'No'
         createCookie('downloadAllFlag',download_all_flg,365);
     }
     if (!(skip_into_percentage)) skip_into_percentage = 0
-    if (debugLogging) console.log('setSettings:','download_all_flg',download_all_flg,'skip_into_percentage',skip_into_percentage)
+    if (!(mark_played_after)) mark_played_after = 1000
+    if (debugLogging) console.log('setSettings:','download_all_flg',download_all_flg,'skip_into_percentage',skip_into_percentage,'mark_played_after',mark_played_after)
     $("#downloadAllFlag").val(download_all_flg);
     $('#skipIntoPCT').val(skip_into_percentage)
+    $('#markPlayedAfter').val(mark_played_after)
 }
 
 function showBanner() {
@@ -501,7 +594,6 @@ function showBanner() {
                             action: function(){
                                 eraseCookie('bannerVersion');
                                 createCookie('bannerVersion',cver * -1,365);
-                                console.log('cookie set with',cver * -1)
                             }
                         }
                     }
@@ -1002,7 +1094,7 @@ function logPlay(tid)
             playSetVisual(tid);
             $.get(hosted_url + 'play.php?email=' + email + '&tid=' + tid);
         }
-    }, 2000);
+    }, mark_played_after);
 }
 
 function clearHistory(tid)
@@ -1247,8 +1339,9 @@ function queueDataLoad()
                     cPage = true;
                     //Add crate layout section to page along with appropriate buttons
                     var cPageHtml = '<div class=\"spacer20\"><\/div>\r\n<div class=\"spacer20\"><\/div>\r\n\r\n<div class=\"header_border_bottom\">\r\n                  <div style=\"position:absolute;bottom:0;\"><h1><span class=\"SectionTitleText\">Custom Crate<\/span><\/h1><\/div><div class=\"float_right\" style=\"margin-bottom:5px;\"><span id=\"crate_count\" style=\"color:red;font-weight:bold;\"><\/span><\/div>\r\n                  <div class=\"float_right\" style=\"margin-bottom:5px;\">\r\n                     \r\n               \r\n                  <\/div>\r\n                  <div class=\"clear\"><\/div>\r\n               <\/div>\r\n\r\n<div class=\"spacer20\"><\/div>\r\n<div class=\"bb_doted\"><div class=\"spacer5\"><\/div><\/div>\r\n\r\n<div>\r\n<ul class=\"record_pool_listing\">\r\n    <div id=\"customCrateContent\">\r\n   \r\n\t<\/div>\r\n<\/ul>\r\n<\/div>\r\n'
-                    cPageHtml += '<input type=\"submit\" value=\"Download All\" onclick=\"return confirm(\'Are you sure you would like to download all the tracks in your custom crate?\');\" id=\"downloadAll\" class=\"btn\">\r\n'
-                    cPageHtml += '<input type=\"submit\" value=\"Delete All\" onclick=\"return confirm(\'Are you sure you would like to remove all of the tracks in your custom crate?\');\" id=\"removeAll\" class=\"btn\">\r\n<input type=\"submit\" value=\"Clear All History\" onclick=\"return confirm(\'Are you sure you would like to remove all of your play\/download statistics?\');\" id=\"clearAllHistory\" class=\"btn\">';
+                    cPageHtml += '<input type=\"submit\" value=\"Download Crate\" id=\"downloadAll\" class=\"btn\">\r\n'
+                    cPageHtml += '<input type=\"submit\" value=\"Clear Crate\" id=\"removeAll\" class=\"btn\">\r\n'
+                    cPageHtml += '<input type=\"submit\" value=\"Clear All History\" id=\"clearAllScriptHistory\" class=\"btn\">';
                     $(".float_left.page_left").append(cPageHtml);
                     $('#crate_count').html(data.length);
                     $(window).scrollTop($('#customCrateContent').offset().top - ($(window).height() / 2));
@@ -1306,8 +1399,85 @@ function queueDataLoad()
             $('#container').append('<div id="jquery_jplayer" class="jp-jplayer" style="width: 0px; height: 0px;"><img id="jp_poster_0" style="width: 0px; height: 0px; display: none;"><audio id="jp_audio_0" preload="auto"></audio></div>');
         }
 
+        $('#clearAllScriptHistory').click(function(){
+            $.confirm({
+                title: 'Clear History',
+                content: 'Are you sure you would like to remove all of your play\/download\/crate data (for all of time)?',
+                escapeKey: true,
+                boxWidth: '30%',
+                useBootstrap: false,
+                backgroundDismiss: true,
+                type: 'red',
+                buttons: {
+                    no: {
+                        text: 'No',
+                        action: function () {}
+                    },
+                    yes: {
+                        text: "Yes",
+                        keys: ['enter'],
+                        btnClass: 'btn-red',
+                        action: function(){
+                            //DOUBLE CHECK
+                            $.confirm({
+                                title: 'Just making sure.....',
+                                content: 'Are you sure you would like to remove all of your play\/download\/crate data (for all of time)?',
+                                escapeKey: true,
+                                boxWidth: '30%',
+                                useBootstrap: false,
+                                backgroundDismiss: true,
+                                type: 'red',
+                                buttons: {
+                                    no: {
+                                        text: 'No',
+                                        action: function () {}
+                                    },
+                                    yes: {
+                                        text: "Yes Remove All My History",
+                                        keys: ['enter'],
+                                        btnClass: 'btn-red',
+                                        action: function(){
+                                            clearHistory();
+                                            window.location.reload();
+                                        }
+                                    }
+                                }
+                            });
+                        }
+                    }
+                }
+            });
+        });
+
         $('#downloadAll').click(function(){
-            time = 0;
+           $.confirm({
+                title: 'Download Crate',
+                content: 'Are you sure you would like to download all the tracks in your custom crate?',
+                escapeKey: true,
+                boxWidth: '30%',
+                useBootstrap: false,
+                backgroundDismiss: true,
+                type: 'green',
+                buttons: {
+                    no: {
+                        text: 'No',
+                        action: function () {}
+                    },
+                     yes: {
+                            text: "Yes",
+                            keys: ['enter'],
+                            btnClass: 'btn-green',
+                            action: function(){
+                                downloadAllFromCrate()
+                            }
+                        }
+                 }
+           });
+
+        });
+
+        function downloadAllFromCrate() {
+             time = 0;
             $('#customCrateContent').find('[id^=t_]').each(function(a,b) {
                 setTimeout( function(){
                      var tid = $(b).attr('id').replace('t_','');
@@ -1316,10 +1486,33 @@ function queueDataLoad()
                 time += 750;
             });
             time = 0;
-        });
+        }
 
         $('#removeAll').click(function(){
-            crateFlip(null,null,true);
+            $.confirm({
+                title: 'Clear Crate',
+                content: 'Are you sure you would like to remove all of the tracks in your custom crate?',
+                escapeKey: true,
+                boxWidth: '30%',
+                useBootstrap: false,
+                backgroundDismiss: true,
+                type: 'red',
+                buttons: {
+                    no: {
+                        text: 'No',
+                        action: function () {}
+                    },
+                        yes: {
+                            text: "Yes",
+                            btnClass: 'btn-red',
+                            keys: ['enter'],
+                            action: function(){
+                                crateFlip(null,null,true);
+                            }
+                        }
+
+                 }
+           });
         });
     }
 }
