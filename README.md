@@ -11,9 +11,8 @@ https://chrome.google.com/webstore/detail/tampermonkey/dhdgffkkebhmkfjojejmpbldm
 
 2. Once installed go to this link to install the DJ City User script:
 
-http://djmuff.com/userscripts/djcity.user.js 
+https://williammuff.github.io/djcityuserscript/djcity.user.js
 *once accessed the extension will prompt you to install 
-
 
 ### 1-Click & Bulk Downloads with auto rating
 The script allows for easily navigating the DJcity website. These download and auto rating features can be taken advantage of in many ways. I recommend using the keyboard (arrow keys) to navigate with this script.
