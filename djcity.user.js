@@ -3,14 +3,14 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.17
+// @version       1.19
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
 // @require   //ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js
-// @require   http://williammuff.us/djcity/includes/nprogress.js
+// @require   https://williammuff.us:444/djcity/includes/nprogress.js
 // @require   //cdnjs.cloudflare.com/ajax/libs/remodal/1.1.1/remodal.min.js
-// @require   http://williammuff.us/djcity/includes/jquery.modal.js
+// @require   https://williammuff.us:444/djcity/includes/jquery.modal.js
 // @require   https://use.fontawesome.com/ca420a7d85.js
 // @require   https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
 // require   file:///C:/djcityuserscript/djcity.user.js
@@ -28,6 +28,9 @@ var releaseNotes = [
         ],
         'id':1.18,"notes":[
             'External css/js/php files are now served over HTTPS to avoid mixed content failures on latest browsers.'
+        ],
+        'id':1.19,"notes":[
+            "I left some HTTP (non SSL) links included in the script"
         ]
     }
 ]
@@ -140,7 +143,7 @@ function openAllChartsForYou() {
      $('.uscript_openall').click(function(e) {
         cl = $(e.target).parent().parent().find('.chart_list').find('li')
         $(cl).each(function(k,v){
-            url = 'http://www.' + djcity_host + $(v).find('a').attr('href')
+            url = 'https://www.' + djcity_host + $(v).find('a').attr('href')
             GM_openInTab(url)
         })
     })
@@ -677,7 +680,7 @@ function loadJPlayer()
     //INIT REAL JPLAYER
     $("#jquery_jplayer").jPlayer({
         ready: function () {},
-        swfPath: "http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/obj/",
+        swfPath: "https://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/obj/",
         supplied: "mp3",
         preload: "auto"
     });
@@ -686,7 +689,7 @@ function loadJPlayer()
     $('#jquery_jplayer').after('<div id="jquery_jplayer_cache" class="jp-jplayer" style="width: 0px; height: 0px;"></div>')
     $("#jquery_jplayer_cache").jPlayer({
         ready: function () {},
-        swfPath: "http://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/obj/",
+        swfPath: "https://djshmrulmvjbw.cloudfront.net/App_Templates/Skin_1/obj/",
         supplied: "mp3",
         preload: "auto",
         load: function (e) { console.log(e) }
@@ -711,11 +714,11 @@ function loadJPlayer()
             d = $(this).closest('[id^="t_"]');
             e = d.attr("id").match(/[\d]+$/);
             f = d.data("pid");
-            g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
+            g = "https://preview.pool.djcity.com/" + az(e) + f + ".mp3";
 
             var player = $('#jquery_jplayer');
             var id = $(this).closest('[id^="t_"]').attr('id').match(/[\d]+$/);
-            var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
+            var nmp3 = "https://preview.cdn.djcity.com/" + id + ".mp3";
             if (player.data("jPlayer").status.media.mp3 === g) {
                 player.jPlayer("play");
                 cpTrack = id;
@@ -792,7 +795,7 @@ function seekPlayer(direction, seconds_to_skip)
 
 function skipPlayer(direction)
 {
-    currentTrackSrc = $("#jquery_jplayer").data("jPlayer").status.src.replace('http://preview.cdn.djcity.com/', '');
+    currentTrackSrc = $("#jquery_jplayer").data("jPlayer").status.src.replace('https://preview.cdn.djcity.com/', '');
     currentTrack = currentTrackSrc.replace('.mp3','');
     currentTrack = cpTrack;
 
@@ -952,7 +955,7 @@ function getMP3URL(tid)
             d = idDiv;
             e = d.attr("id").match(/[\d]+$/);
             f = d.data("pid");
-            g = "http://preview.pool.djcity.com/" + az(e) + f + ".mp3";
+            g = "https://preview.pool.djcity.com/" + az(e) + f + ".mp3";
     //------------END STOLEN
     return g
 }
@@ -966,7 +969,7 @@ function playTrack(track_id,force_play = 1)
     var player = $('#jquery_jplayer');
     var id = track_id;
     
-    var nmp3 = "http://preview.cdn.djcity.com/" + id + ".mp3";
+    var nmp3 = "https://preview.cdn.djcity.com/" + id + ".mp3";
 
     cpTrack = id;
     player.jPlayer("setMedia", {
@@ -1077,7 +1080,7 @@ $('html').on({
         { //Q
             if (!(cPage))
             {
-                window.location.href = "http://www." + djcity_host + queuePage;
+                window.location.href = "https://www." + djcity_host + queuePage;
             }
         }
     }
@@ -1085,7 +1088,7 @@ $('html').on({
 
 function logPlay(tid)
 {
-    ctid = $("#jquery_jplayer").data("jPlayer").status.src.replace('http://preview.cdn.djcity.com/', '').replace('.mp3','');
+    ctid = $("#jquery_jplayer").data("jPlayer").status.src.replace('https://preview.cdn.djcity.com/', '').replace('.mp3','');
     ctid = cpTrack;
 
     setTimeout(function(){
@@ -1157,7 +1160,7 @@ function downloadTrack(track_id, version, email)
     if (dlAll == 'Yes') {
         $(vt).each(function(k,v){
             //download_url = 'http://media.' + djcity_host + '/dd2.aspx?r=' + track_id + '&t=' + v['vid'];
-            download_url = 'http://' + djcity_host + this.dlink
+            download_url = 'https://' + djcity_host + this.dlink
             $.get(hosted_url + 'download.php?email=' + email + '&tid=' + track_id);
             downloadVisual(track_id);
             console.log(download_url);
@@ -1170,7 +1173,7 @@ function downloadTrack(track_id, version, email)
         if (verd){
             dlink = verd['dlink']
             if (dlink != '#') {
-                download_url = 'http://' + djcity_host + dlink
+                download_url = 'https://' + djcity_host + dlink
                 $.get(hosted_url + 'download.php?email=' + email + '&tid=' + track_id);
                 downloadVisual(track_id);
                 console.log(download_url);
@@ -1256,7 +1259,7 @@ function logDownload(sid,email)
 
 function rateTrack(track_id)
 {
-    var track_url = 'http://www.' + djcity_host + '/record-pool_track.aspx?rid=' + track_id;
+    var track_url = 'https://www.' + djcity_host + '/record-pool_track.aspx?rid=' + track_id;
     $.ajaxSetup({async:false});
     $.get(track_url, function(data) {content = data;});
 
