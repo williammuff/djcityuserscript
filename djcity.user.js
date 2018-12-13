@@ -3,7 +3,7 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.19
+// @version       1.20
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
@@ -19,18 +19,21 @@
 // ==/UserScript==
 var releaseNotes = [
     {
-        'id':1.13,"notes":["Added Banner Message To Show Changes","Added Bug Report section in settings pane","Changed host to williammuff.us"],
-        'id':1.14,"notes":["Added option to set delay for marking as played in settings section."],
-        'id':1.15,"notes":['Updated all buttons on "crate" page to properly ensure confirmation.','The "Clear All History" button now also removes crate information'],
-        'id':1.16,"notes":[
+        'id':"1.13","notes":["Added Banner Message To Show Changes","Added Bug Report section in settings pane","Changed host to williammuff.us"],
+        'id':"1.14","notes":["Added option to set delay for marking as played in settings section."],
+        'id':"1.15","notes":['Updated all buttons on "crate" page to properly ensure confirmation.','The "Clear All History" button now also removes crate information'],
+        'id':"1.16","notes":[
             'Added user script top box (most popular downloads).',
             'Added "OPEN ALL" for all side panel boxes (hot box,top picks,userscript top box).'
         ],
-        'id':1.18,"notes":[
+        'id':"1.18","notes":[
             'External css/js/php files are now served over HTTPS to avoid mixed content failures on latest browsers.'
         ],
-        'id':1.19,"notes":[
+        'id':"1.19","notes":[
             "I left some HTTP (non SSL) links included in the script"
+        ],
+        'id':"1.20","notes":[
+            "Update to Open All buttons on right panes; they will no longer open songs that have already been downloaded."
         ]
     }
 ]
@@ -143,8 +146,10 @@ function openAllChartsForYou() {
      $('.uscript_openall').click(function(e) {
         cl = $(e.target).parent().parent().find('.chart_list').find('li')
         $(cl).each(function(k,v){
+            if (!($(v).hasClass('dlBoxSide'))) {
             url = 'https://www.' + djcity_host + $(v).find('a').attr('href')
             GM_openInTab(url)
+            }
         })
     })
 }
@@ -968,7 +973,7 @@ function playTrack(track_id,force_play = 1)
     $(".clearHistoryBtn").css('display', 'none');
     var player = $('#jquery_jplayer');
     var id = track_id;
-    
+
     var nmp3 = "https://preview.cdn.djcity.com/" + id + ".mp3";
 
     cpTrack = id;
