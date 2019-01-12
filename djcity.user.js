@@ -3,7 +3,7 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.20
+// @version       1.21
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
@@ -13,7 +13,6 @@
 // @require   https://williammuff.us:444/djcity/includes/jquery.modal.js
 // @require   https://use.fontawesome.com/ca420a7d85.js
 // @require   https://cdnjs.cloudflare.com/ajax/libs/jquery-confirm/3.3.2/jquery-confirm.min.js
-// require   file:///C:/djcityuserscript/djcity.user.js
 // @grant    GM_openInTab
 //
 // ==/UserScript==
@@ -34,11 +33,14 @@ var releaseNotes = [
         ],
         'id':"1.20","notes":[
             "Update to Open All buttons on right panes; they will no longer open songs that have already been downloaded."
+        ],
+        'id':"1.21","notes":[
+            "DJCITY made changes to site, back in business."
         ]
     }
 ]
 var cver = releaseNotes[releaseNotes.length - 1]['id'];
-console.log(cver)
+console.log('DJ City - Epic User Script - By William Muff - ' + cver)
 
 var cUrl = window.location.href;
 var cPage;
@@ -345,7 +347,6 @@ function pageVisuals()
     $('#sendBug').click(function(){
         burl = hosted_url + 'bug.php?email=' + encodeURIComponent(email) + '&bug=' + encodeURIComponent($('#bugMessage').val())
         $.getJSON(burl,function(data){
-            console.log(data)
             $.alert({
                 title: 'Success',
                 useBootstrap: false,
@@ -1123,8 +1124,8 @@ function trackVersionDownload(pdata)
 {
     var verTypes = [];
     var sPage = $(pdata);
-    $(sPage).find('#ad_sublisting').children('li').each(function(k,v){ //LOOP THROUGH EACH VERSON
 
+    $(sPage).find('#td_sublisting').children('li').each(function(k,v){ //LOOP THROUGH EACH VERSON
         t = $(this)
         dlink = t.find('.float_right.reviw_tdonw').find('a').attr('href')
         t_ver = t.find('.float_left').text()
@@ -1149,8 +1150,8 @@ function trackVersionDownload(pdata)
 
 function getTrackLabel(pdata){
     sPage = $(pdata);
-    artist = $($(sPage).find('.float_right.artist_details')[0]).text()
-    title =  $($(sPage).find('.float_right.artist_details')[1]).text()
+    artist = $($(sPage).find('.float_right.track_details')[0]).text()
+    title =  $($(sPage).find('.float_right.track_details')[1]).text()
     return {'title':title,'artist':artist}
 }
 
@@ -1161,48 +1162,51 @@ function downloadTrack(track_id, version, email)
     var vt = trackVersionDownload(pdata);
     var dlAll = readCookie('downloadAllFlag')
 
-    // DISABLING UNTIL I CNA BEAT RECAPTCHA
-    if (dlAll == 'Yes') {
-        $(vt).each(function(k,v){
-            //download_url = 'http://media.' + djcity_host + '/dd2.aspx?r=' + track_id + '&t=' + v['vid'];
-            download_url = 'https://' + djcity_host + this.dlink
-            $.get(hosted_url + 'download.php?email=' + email + '&tid=' + track_id);
-            downloadVisual(track_id);
-            console.log(download_url);
-            downloadFile(download_url);
-        })
-    }
-    else
-    {
-        verd = findVersionID(vt,version);
-        if (verd){
-            dlink = verd['dlink']
-            if (dlink != '#') {
-                download_url = 'https://' + djcity_host + dlink
+    if (vt.length > 0) {
+        // DISABLING UNTIL I CNA BEAT RECAPTCHA
+        if (dlAll == 'Yes') {
+            $(vt).each(function(k,v){
+                //download_url = 'http://media.' + djcity_host + '/dd2.aspx?r=' + track_id + '&t=' + v['vid'];
+                download_url = 'https://' + djcity_host + this.dlink
                 $.get(hosted_url + 'download.php?email=' + email + '&tid=' + track_id);
                 downloadVisual(track_id);
                 console.log(download_url);
                 downloadFile(download_url);
-            }
-            else {
-                $.confirm({
-                    title: 'Too Many Downloads!',
-                    boxWidth: '30%',
-                    useBootstrap: false,
-                    type: 'red',
-                    content: 'You have reached the max number of downloads for the (' + verd['vtype'] + ') version of this the (' + t_info['title'] + ' | ' + t_info['artist']+ ') track.',
-                    buttons: {
-                        close: {
-                            text: 'Ok',
-                            keys: ['enter','esc'],
-                            action: function(){
+            })
+        }
+        else
+        {
+            verd = findVersionID(vt,version);
+            if (verd){
+                dlink = verd['dlink']
+                if (dlink != '#') {
+                    download_url = 'https://' + djcity_host + dlink
+                    $.get(hosted_url + 'download.php?email=' + email + '&tid=' + track_id);
+                    downloadVisual(track_id);
+                    console.log(download_url);
+                    downloadFile(download_url);
+                }
+                else {
+                    $.confirm({
+                        title: 'Too Many Downloads!',
+                        boxWidth: '30%',
+                        useBootstrap: false,
+                        type: 'red',
+                        content: 'You have reached the max number of downloads for the (' + verd['vtype'] + ') version of this the (' + t_info['title'] + ' | ' + t_info['artist']+ ') track.',
+                        buttons: {
+                            close: {
+                                text: 'Ok',
+                                keys: ['enter','esc'],
+                                action: function(){
+                                }
                             }
                         }
-                    }
-                  });
+                    });
+                }
             }
         }
     }
+    else console.log('Version type not found',vt);
 }
 
 function downloadFile(url)
