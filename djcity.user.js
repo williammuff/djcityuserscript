@@ -3,7 +3,7 @@
 // @namespace     http://localhost.localdomain
 // @icon          http://djcity.com/favicon.ico
 // @description   Epic user script for DJ City
-// @version       1.21
+// @version       1.22
 //
 // @include   http://www.djcity*
 // @include   https://www.djcity*
@@ -36,6 +36,9 @@ var releaseNotes = [
         ],
         'id':"1.21","notes":[
             "DJCITY made changes to site, back in business."
+        ],
+        'id':"1.22","notes":[
+            "Updated page auto rate (new star items were added)."
         ]
     }
 ]
@@ -198,8 +201,9 @@ function chartListMark()
 
 function autoRateAttempt()
 {
-    $("#ctl00_PageContent_rating").val(3);
-    $("#ctl00_PageContent_submit").trigger('click');
+   //$("#ctl00_PageContent_rating").val(3);
+   //$("#ctl00_PageContent_submit").trigger('click');
+    $('#stars').children().get(2).click() //NEW METHOD
 }
 
 function buildTrackArray()
