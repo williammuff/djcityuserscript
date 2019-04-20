@@ -203,7 +203,8 @@ function autoRateAttempt()
 {
    //$("#ctl00_PageContent_rating").val(3);
    //$("#ctl00_PageContent_submit").trigger('click');
-    $('#stars').children().get(2).click() //NEW METHOD
+   rBox =  $('#stars').children().get(2)
+   if (rBox) $(rBox).click()
 }
 
 function buildTrackArray()
